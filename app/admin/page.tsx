@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -17,7 +16,7 @@ export default function AdminPage() {
     const role = localStorage.getItem('userRole');
     const email = localStorage.getItem('userEmail');
     
-    if (role !== 'admin' || !email) {
+    if (role !== 'ADMIN' || !email) {
       router.push('/login');
       return;
     }

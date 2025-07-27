@@ -1,9 +1,9 @@
-
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { UserAPI } from '@/config/userApi';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,17 +17,30 @@ export default function LoginPage() {
     setIsLoading(true);
     setError('');
 
-    // Demo authentication
-    if (email === 'admin@example.com' && password === 'admin123') {
-      localStorage.setItem('userRole', 'admin');
-      localStorage.setItem('userEmail', email);
-      router.push('/admin');
-    } else if (email === 'user@example.com' && password === 'user123') {
-      localStorage.setItem('userRole', 'user');
-      localStorage.setItem('userEmail', email);
-      router.push('/dashboard');
-    } else {
-      setError('Invalid credentials. Try admin@example.com/admin123 or user@example.com/user123');
+    try {
+      const userData = await UserAPI.login(email, password);
+
+      if (!userData.approved) {
+        setError('Your account is not approved yet. Please wait for admin approval.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Save user session to localStorage
+      localStorage.setItem('userRole', userData.role);
+      localStorage.setItem('userEmail', userData.email);
+      localStorage.setItem('userName', userData.name);
+      localStorage.setItem('userId', userData.id.toString());
+
+      // Redirect based on role
+      if (userData.role === 'ADMIN') {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err instanceof Error ? err.message : 'Login failed. Please check your credentials.');
     }
     
     setIsLoading(false);
