@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { UserAPI } from '@/config/userApi';
+import { AdminAPI } from '@/config/api';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -18,22 +18,21 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const userData = await UserAPI.login(email, password);
+      const userData = await AdminAPI.login(email, password);
 
-      if (!userData.approved) {
-        setError('Your account is not approved yet. Please wait for admin approval.');
-        setIsLoading(false);
-        return;
-      }
-
-      // Save user session to localStorage
+      // Backend does not send 'approved' or 'email' now
+      // So we just save what's available
       localStorage.setItem('userRole', userData.role);
-      localStorage.setItem('userEmail', userData.email);
       localStorage.setItem('userName', userData.name);
       localStorage.setItem('userId', userData.id.toString());
+      if (userData.adminId) {
+        localStorage.setItem('adminId', userData.adminId.toString());
+      }
 
       // Redirect based on role
-      if (userData.role === 'ADMIN') {
+      if (userData.role === 'SUPER_ADMIN') {
+        router.push('/super-admin');
+      } else if (userData.role === 'ADMIN') {
         router.push('/admin');
       } else {
         router.push('/dashboard');
@@ -132,6 +131,17 @@ export default function LoginPage() {
             </button>
           </form>
 
+          {/* Super Admin Access Link */}
+          <div className="mt-6 text-center">
+            <Link 
+              href="/super-admin" 
+              className="text-red-400 hover:text-red-300 text-sm flex items-center justify-center"
+            >
+              <i className="ri-shield-keyhole-line mr-2"></i>
+              Super Admin Access
+            </Link>
+          </div>
+
           <div className="mt-6 text-center">
             <p className="text-gray-400">
               Don't have an account?{' '}
@@ -145,6 +155,7 @@ export default function LoginPage() {
           <div className="mt-6 p-4 bg-gray-700/30 rounded-lg border border-gray-600/50">
             <p className="text-sm text-gray-300 mb-2 font-medium">Demo Credentials:</p>
             <div className="text-xs text-gray-400 space-y-1">
+              <p>Super Admin: superadmin@example.com / super123</p>
               <p>Admin: admin@example.com / admin123</p>
               <p>User: user@example.com / user123</p>
             </div>

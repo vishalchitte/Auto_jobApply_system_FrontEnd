@@ -1,17 +1,6 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
-// Interface matching the Spring Boot User entity
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  approved: boolean;
-  password?: string;
-}
-
-// User login response
-export interface UserLoginResponse {
+export interface AdminRequest {
   id: number;
   name: string;
   email: string;
@@ -19,43 +8,42 @@ export interface UserLoginResponse {
   approved: boolean;
 }
 
-// API utility class
-export class UserAPI {
-  private static baseURL = `${API_BASE_URL}/user`;
+export interface SystemOverview {
+  totalUsers: number;
+  totalAdmins: number;
+  totalSubAdmins: number;
+}
 
-  // Login method
-  static async login(email: string, password: string): Promise<UserLoginResponse> {
-    const url = `${this.baseURL}/login`;
-    console.log('Making login request to:', url);
-    console.log('Request payload:', { email, password: '***' });
+export class SuperAdminAPI {
+  private static baseURL = `${API_BASE_URL}/super-admin`;
 
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+  // Fetch pending admin requests
+  static async getAdminRequests(): Promise<AdminRequest[]> {
+    const url = `${this.baseURL}/requests`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch admin requests');
+    return response.json();
+  }
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+  // Approve an admin
+  static async approveAdmin(adminId: number): Promise<void> {
+    const url = `${this.baseURL}/approve/${adminId}`;
+    const response = await fetch(url, { method: 'POST' });
+    if (!response.ok) throw new Error('Failed to approve admin');
+  }
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Login failed with error:', errorText);
-        throw new Error(errorText || `Login failed with status: ${response.status}`);
-      }
+  // Reject an admin
+  static async rejectAdmin(adminId: number): Promise<void> {
+    const url = `${this.baseURL}/reject/${adminId}`;
+    const response = await fetch(url, { method: 'POST' });
+    if (!response.ok) throw new Error('Failed to reject admin');
+  }
 
-      const data = await response.json();
-      console.log('Login successful, user data:', { ...data, password: undefined });
-      return data;
-    } catch (error) {
-      console.error('Network error during login:', error);
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('Unable to connect to server. Please check if the backend is running on http://localhost:8080');
-      }
-      throw error;
-    }
+  // Get system overview stats
+  static async getSystemOverview(): Promise<SystemOverview> {
+    const url = `${this.baseURL}/overview`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch system overview');
+    return response.json();
   }
 }

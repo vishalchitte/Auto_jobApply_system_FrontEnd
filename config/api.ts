@@ -17,6 +17,7 @@ export interface AdminLoginResponse {
   name: string;
   email: string;
   role: string;
+  adminId?: number; // Add this line
 }
 
 // API utility class for admin operations

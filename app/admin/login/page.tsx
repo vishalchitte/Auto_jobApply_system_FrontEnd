@@ -13,7 +13,7 @@ export default function UserLogin() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email || !password) {
       setError('Please fill in all fields');
       return;
@@ -31,11 +31,16 @@ export default function UserLogin() {
         return;
       }
 
-      // Save admin session to localStorage
+      // Save session details
       localStorage.setItem('userRole', adminData.role);
       localStorage.setItem('userEmail', adminData.email);
       localStorage.setItem('userName', adminData.name);
       localStorage.setItem('userId', adminData.id.toString());
+
+      // ✅ Store adminId for filtering data
+      if (adminData.adminId) {
+        localStorage.setItem('adminId', adminData.adminId.toString());
+      }
 
       // Redirect to admin dashboard
       router.push('/admin');

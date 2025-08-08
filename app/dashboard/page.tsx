@@ -1,28 +1,27 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import FileUpload from './FileUpload';
 import EmailStatus from './EmailStatus';
-import Statistics from './Statistics';
 import UserEmailTemplates from './UserEmailTemplates';
+import InterviewTimeTable from './InterviewTimeTable';
 
 export default function DashboardPage() {
   const [userEmail, setUserEmail] = useState('');
-  const [activeTab, setActiveTab] = useState('upload');
-  const [notificationCount, setNotificationCount] = useState(0); // For bell icon
+  const [activeTab, setActiveTab] = useState('upload'); // Default tab: Upload Files
+  const [notificationCount, setNotificationCount] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
     const role = localStorage.getItem('userRole');
     const email = localStorage.getItem('userEmail');
-    
+
     if (!role || !email) {
       router.push('/login');
       return;
     }
-    
+
     setUserEmail(email);
   }, [router]);
 
@@ -39,7 +38,7 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-white" style={{fontFamily: 'Pacifico, serif'}}>
+              <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'Pacifico, serif' }}>
                 logo
               </h1>
               <div className="ml-4">
@@ -62,6 +61,7 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="mb-6">
           <nav className="flex space-x-1 overflow-x-auto">
+            {/* Upload Files */}
             <button
               onClick={() => setActiveTab('upload')}
               className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
@@ -73,6 +73,34 @@ export default function DashboardPage() {
               <i className="ri-upload-cloud-line mr-2"></i>
               Upload Files
             </button>
+
+            {/* Email Status */}
+            <button
+              onClick={() => setActiveTab('emailstatus')}
+              className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
+                activeTab === 'emailstatus'
+                  ? 'bg-purple-600 text-white'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'
+              }`}
+            >
+              <i className="ri-mail-open-line mr-2"></i>
+              Email Status
+            </button>
+
+            {/* Interview Time Table */}
+            <button
+              onClick={() => setActiveTab('interview')}
+              className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
+                activeTab === 'interview'
+                  ? 'bg-purple-600 text-white'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'
+              }`}
+            >
+              <i className="ri-calendar-event-line mr-2"></i>
+              Interview Time Table
+            </button>
+
+            {/* Email Templates */}
             <button
               onClick={() => setActiveTab('templates')}
               className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
@@ -84,6 +112,8 @@ export default function DashboardPage() {
               <i className="ri-mail-settings-line mr-2"></i>
               Email Templates
             </button>
+
+            {/* Scheduler */}
             <button
               onClick={() => setActiveTab('scheduler')}
               className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
@@ -95,6 +125,8 @@ export default function DashboardPage() {
               <i className="ri-calendar-schedule-line mr-2"></i>
               Scheduler
             </button>
+
+            {/* Notifications */}
             <button
               onClick={() => setActiveTab('notifications')}
               className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap relative ${
@@ -111,6 +143,8 @@ export default function DashboardPage() {
                 </span>
               )}
             </button>
+
+            {/* Profile Settings */}
             <button
               onClick={() => setActiveTab('profile')}
               className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
@@ -128,10 +162,24 @@ export default function DashboardPage() {
         {/* Tab Content */}
         <div className="animate-fade-in">
           {activeTab === 'upload' && <FileUpload />}
+          {activeTab === 'emailstatus' && <EmailStatus />}
+          {activeTab === 'interview' && <InterviewTimeTable />}
           {activeTab === 'templates' && <UserEmailTemplates />}
-          {activeTab === 'scheduler' && <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 text-white">Scheduler (Coming Soon)</div>}
-          {activeTab === 'notifications' && <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 text-white">Notifications (Coming Soon)</div>}
-          {activeTab === 'profile' && <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 text-white">Profile Settings (Coming Soon)</div>}
+          {activeTab === 'scheduler' && (
+            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 text-white">
+              Scheduler (Coming Soon)
+            </div>
+          )}
+          {activeTab === 'notifications' && (
+            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 text-white">
+              Notifications (Coming Soon)
+            </div>
+          )}
+          {activeTab === 'profile' && (
+            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 text-white">
+              Profile Settings (Coming Soon)
+            </div>
+          )}
         </div>
       </div>
     </div>

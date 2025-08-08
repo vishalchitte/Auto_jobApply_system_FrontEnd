@@ -6,12 +6,13 @@ import Link from 'next/link';
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
-    fullName: '',
+    name: '',
     email: '',
     mobile: '',
     password: '',
     confirmPassword: '',
-    role: 'CANDIDATE' // Added default role
+    role: 'CANDIDATE', // Default role
+    instituteId: '' // ✅ New field
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -30,16 +31,16 @@ export default function SignupPage() {
         return;
       }
 
-      // Create request payload
+      // ✅ Now sending "name" instead of "fullName"
       const payload = {
-        fullName: formData.fullName,
+        name: formData.name,
         email: formData.email,
         password: formData.password,
         mobile: formData.mobile,
-        role: formData.role
+        role: formData.role,
+        instituteId: formData.instituteId
       };
-
-      // Make API call
+    
       const response = await fetch('http://localhost:8080/api/auth/register', {
         method: 'POST',
         headers: {
@@ -50,11 +51,10 @@ export default function SignupPage() {
       });
 
       if (!response.ok) {
-        const error = await response.text();
-        throw new Error(error || 'Failed to register');
+        const errorMsg = await response.text();
+        throw new Error(errorMsg || 'Failed to register');
       }
 
-      // Handle successful response
       alert('Registration successful!');
       router.push('/login');
 
@@ -75,20 +75,12 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center relative overflow-hidden">
-      {/* Animated background elements */}
+      {/* Background effects */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-20 w-32 h-32 bg-purple-500/10 rounded-full blur-xl animate-pulse"></div>
         <div className="absolute top-40 right-32 w-48 h-48 bg-blue-500/10 rounded-full blur-xl animate-pulse delay-1000"></div>
         <div className="absolute bottom-32 left-40 w-40 h-40 bg-cyan-500/10 rounded-full blur-xl animate-pulse delay-2000"></div>
         <div className="absolute bottom-20 right-20 w-56 h-56 bg-pink-500/10 rounded-full blur-xl animate-pulse delay-3000"></div>
-      </div>
-
-      {/* Floating particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/20 rounded-full animate-bounce delay-500"></div>
-        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-purple-400/30 rounded-full animate-bounce delay-1000"></div>
-        <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-blue-400/20 rounded-full animate-bounce delay-1500"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-2 h-2 bg-cyan-400/30 rounded-full animate-bounce delay-2000"></div>
       </div>
 
       <div className="relative z-10 max-w-md w-full mx-4">
@@ -113,78 +105,80 @@ export default function SignupPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Full Name
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
               <input
                 type="text"
-                name="fullName"
-                value={formData.fullName}
+                name="name" // ✅ matches backend
+                value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-400"
+                className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 text-white"
                 placeholder="Enter your full name"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Email Address
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-400"
+                className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 text-white"
                 placeholder="Enter your email"
                 required
               />
             </div>
 
-          
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Mobile Number
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Mobile Number</label>
               <input
-                type="tel" // changed type to tel
-                name="mobile" // changed from company
+                type="tel"
+                name="mobile"
                 value={formData.mobile}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-400"
+                className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 text-white"
                 placeholder="Enter your mobile number"
-                pattern="[0-9]{10}" // Add pattern for 10-digit number
-                maxLength={10} // Limit to 10 digits
+                pattern="[0-9]{10}"
+                maxLength={10}
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Institute ID</label>
+              <input
+                type="text"
+                name="instituteId"
+                value={formData.instituteId}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 text-white"
+                placeholder="Enter your institute ID"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
               <input
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-400"
+                className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 text-white"
                 placeholder="Create a password"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Confirm Password
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
               <input
                 type="password"
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-400"
+                className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 text-white"
                 placeholder="Confirm your password"
                 required
               />
@@ -193,7 +187,7 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed !rounded-button flex items-center justify-center"
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 flex items-center justify-center"
             >
               {isLoading ? (
                 <>

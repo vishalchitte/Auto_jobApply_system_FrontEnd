@@ -1,0 +1,75 @@
+APIs
+Test Steps in Postman
+======================================================
+
+insert main admin
+
+http://localhost:8080/admin-management/create
+
+Body → raw → JSON
+
+{
+  "adminName": "Main Admin",
+  "email": "mainadmin@example.com",
+  "password": "password123",
+  "status": "APPROVED",
+  "instituteId": "INST-MAIN"
+}
+Then, in the database, make sure this record is APPROVED.
+
+=====================================================
+1️ Create a Sub-Admin (Pending Approval)
+POST
+
+
+http://localhost:8080/admin-management/create
+Body → raw → JSON
+
+{
+  "adminName": "Sub Admin 1",
+  "email": "subadmin1@example.com",
+  "password": "password123"
+}
+Expected Response
+
+{
+  "id": 2,
+  "adminName": "Sub Admin 1",
+  "email": "subadmin1@example.com",
+  "status": "PENDING_APPROVAL",
+  "message": "Admin created successfully. Pending approval."
+}
+📌 Check DB → status should be "PENDING_APPROVAL", institute_id should be NULL.
+
+========================================================================================
+
+Approve the Sub-Admin
+
+PUT
+
+http://localhost:8080/admin-management/approve/2
+(Replace 2 with the ID returned from step 1.)
+==========================================================================
+
+Test in Postman
+GET
+
+http://localhost:8080/admin-management/pending
+[
+  {
+    "id": 2,
+    "adminName": "Sub Admin 1",
+    "email": "subadmin1@example.com",
+    "instituteId": null,
+    "status": "PENDING_APPROVAL"
+  }
+]
+
+{
+  "id": 2,
+  "adminName": "Sub Admin 1",
+  "email": "subadmin1@example.com",
+  "instituteId": "INST-1234",
+  "status": "APPROVED",
+  "message": "Admin approved and Institute ID sent via email."
+}
